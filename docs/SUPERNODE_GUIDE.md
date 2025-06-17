@@ -60,7 +60,8 @@ Verify that your validator meets the minimum staking requirements before proceed
 
 ```bash
 # Get your validator operator address
-VALOPER=$(lumerad keys show validator_key --bech val -a)
+# REPLACE 'validator_key' with your actual validator key name
+VALOPER=$(lumerad keys show YOUR_VALIDATOR_KEY --bech val -a)
 echo "Validator Address: $VALOPER"
 
 # Check current validator status and stake
@@ -80,22 +81,26 @@ If your validator requires additional stake:
 
 ```bash
 # Check account balance for transaction fees
-ACCOUNT_ADDR=$(lumerad keys show validator_key -a)
+# REPLACE 'YOUR_VALIDATOR_KEY' with your actual validator key name
+ACCOUNT_ADDR=$(lumerad keys show YOUR_VALIDATOR_KEY -a)
 lumerad q bank balances $ACCOUNT_ADDR
 
 # Delegate additional stake to reach 25,000 LUME requirement
 # Example: Adding 20,000 LUME (20000000000000ulume)
 lumerad tx staking delegate $VALOPER 20000000000000ulume \
-  --from validator_key \
+  --from YOUR_VALIDATOR_KEY \
   --chain-id lumera-mainnet-1 \
   --gas auto --fees 5000ulume
 ```
 
-### Verify Delegation
-
+### Verification
 ```bash
 # Confirm updated stake
 lumerad q staking validator $VALOPER | grep -E "tokens|operator_address"
+
+# Verify you're on the correct chain
+lumerad status | grep -E "network|chain_id"
+# Should show: "network": "lumera-mainnet-1"
 ```
 
 ---
@@ -124,6 +129,10 @@ supernode version
 # Confirm binary is working
 supernode version
 # Should display version information
+
+# Alternative check if version command fails
+supernode --help
+# Should display command help
 ```
 
 ---
