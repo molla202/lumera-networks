@@ -8,6 +8,7 @@ This repository hosts Lumera Protocol Chain releases informat[i]()on and guides.
 
 #### Genesis
 [Mainnet Genesis](mainnet/genesis.json)
+[claims.csv](mainnet/claims.csv)
 
 #### Minimum gas price
 ```
