@@ -1,0 +1,7 @@
+.github export-ignore
+configs export-ignore
+mainnet export-ignore
+testnet export-ignore
+scripts export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
