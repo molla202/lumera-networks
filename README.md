@@ -7,7 +7,8 @@ This repository hosts Lumera Protocol Chain releases informat[i]()on and guides.
 **lumera-mainnet-1**
 
 #### Genesis
-[Mainned Genesis](mainnet/genesis.json)
+[Mainnet Genesis](mainnet/genesis.json)<br/>
+[claims.csv](mainnet/claims.csv)
 
 #### Minimum gas price
 ```
@@ -43,11 +44,8 @@ https://portal.testnet.lumera.io/lumera-testnet-1
 
 
 ## Guides
-* [Genesis Validator Onboarding Guide for Lumera Protocol](docs/GENESIS_VALIDATOR_ONBOARDING.md)
-* How to create a new node and join the network
-* How to sync node from a snapshot (quickest way to sync blocks).
-* How to upgrade Node to the latest version
 * [Lumera Protocol Validator Operations Manual](docs/VALIDATOR_GUIDE.md)
+* [Lumera SuperNode Operator Guide](docs/SUPERNODE_GUIDE.md)
 
 ## Requirements
 The following requirements are required to run the node natively.
