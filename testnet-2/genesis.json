@@ -966,7 +966,7 @@
         "max_claims_per_block": "100"
       },
       "claim_records": [],
-      "total_claimable_amount": "18749999991853",
+      "total_claimable_amount": "18751634842166",
       "claims_denom": "ulume"
     },
     "consensus": null,
@@ -1176,7 +1176,7 @@
       "params": {
         "minimum_stake_for_sn": {
           "denom": "ulume",
-          "amount": "25000000000"
+          "amount": "10000000000"
         },
         "inactivity_penalty_period": "86400s",
         "reporting_threshold": "10",
