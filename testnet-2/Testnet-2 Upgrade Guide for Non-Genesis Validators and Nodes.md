@@ -19,9 +19,9 @@ To ensure a seamless transition and maintain network availability, we are using 
 
 You will need the following files. Please download them from the official release page (links to be provided):
 
-*   **`lumerad` v1.6.0 binary:** The new node software - https://github.com/LumeraProtocol/lumera/releases/download/v1.6.0/lumera_v1.6.0_linux_amd64.tar.gz
-*   **`genesis.json`:** The new testnet's genesis file - https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/genesis.json
-*   **`claims.csv`:** The updated claims file for `testnet-2` - https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/claims.csv
+*   **`lumerad` v1.6.0 binary:** [The new node software](https://github.com/LumeraProtocol/lumera/releases/download/v1.6.0/lumera_v1.6.0_linux_amd64.tar.gz)
+*   **`genesis.json`:** The new testnet's [genesis file](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/genesis.json)
+*   **`claims.csv`:** The updated [claims file](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/claims.csv)
   
 > You can downlaod these files BEFORE `2025-07-02T16:00:00Z`
 
