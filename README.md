@@ -7,8 +7,28 @@ This repository hosts Lumera Protocol Chain releases informat[i]()on and guides.
 **lumera-mainnet-1**
 
 #### Genesis
-[Mainnet Genesis](mainnet/genesis.json)<br/>
-[claims.csv](mainnet/claims.csv)
+[Mainnet Genesis](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/mainnet/genesis.json) <br/>
+[Mainnet Claims](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/mainnet/claims.csv)
+
+#### Minimum gas price
+```
+minimum-gas-prices = "0.025ulume"
+```
+
+#### Seeds
+```
+```
+
+#### Explorer
+Coming soon!
+
+## Testnet (2!)
+#### Chain ID
+**lumera-testnet-2**
+
+#### Genesis & Claims
+[Testnet-2 Genesis](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/genesis.json) <br/>
+[Testnet-2 Claims](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/claims.csv)
 
 #### Minimum gas price
 ```
@@ -21,26 +41,7 @@ seeds = "faff7c1350468c53121a669ac40e317a4a70c425@seeds.lumera.io:26656"
 ```
 
 #### Explorer
-Coming soon!
-
-## Testnet
-#### Chain ID
-**lumera-testnet-1**
-
-#### Genesis
-[Testnet Genesis](testnet) 
-
-#### Minimum gas price
-```
-minimum-gas-prices = "0.025ulume"
-```
-
-#### Seeds
-```
-```
-
-#### Explorer
-https://portal.testnet.lumera.io/lumera-testnet-1
+https://portal.testnet.lumera.io/lumera-testnet-2
 
 
 ## Guides
