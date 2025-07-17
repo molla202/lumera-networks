@@ -247,7 +247,7 @@ Register your SuperNode on-chain. This must be done from your **validator host**
 <summary><strong>Mainnet</strong></summary>
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
+VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a --keyring-backend <file|os|test>)
 SUPERNODE_ENDPOINT="<your_supernode_public_ip>:4444"
 SUPERNODE_ACCOUNT="<your_supernode_lumera_address>"
 
@@ -257,14 +257,15 @@ lumerad tx supernode register-supernode \
   $SUPERNODE_ACCOUNT \
   --from <your_validator_key_name> \
   --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
+  --gas auto --fees 5000ulume \
+  --keyring-backend <file|os|test>
 ```
 </details>
 <details>
 <summary><strong>Testnet</strong></summary>
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
+VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a --keyring-backend <file|os|test>)
 SUPERNODE_ENDPOINT="<your_supernode_public_ip>:4444"
 SUPERNODE_ACCOUNT="<your_supernode_lumera_address>"
 
@@ -274,7 +275,8 @@ lumerad tx supernode register-supernode \
   $SUPERNODE_ACCOUNT \
   --from <your_validator_key_name> \
   --chain-id lumera-testnet-2 \
-  --gas auto --fees 1000ulume
+  --gas auto --fees 1000ulume \
+  --keyring-backend <file|os|test>
 ```
 </details>
 
