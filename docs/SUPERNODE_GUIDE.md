@@ -96,7 +96,7 @@ lumerad tx staking delegate $VALOPER 5000000000000ulume \
   --gas auto --fees 5000ulume
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet Example</strong></summary>
 
 ```bash
@@ -152,7 +152,7 @@ supernode version
 supernode init <your_supernode_key_name> --chain-id lumera-mainnet-1
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet</strong></summary>
 
 ```bash
@@ -170,7 +170,7 @@ supernode init <your_supernode_key_name> --chain-id lumera-testnet-2
 supernode init <your_supernode_key_name> --recover --mnemonic "<your_24_word_mnemonic_phrase>" --chain-id lumera-mainnet-1
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet</strong></summary>
 
 ```bash
@@ -207,7 +207,7 @@ raptorq:
   files_dir: raptorq_files
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet Configuration</strong></summary>
 
 ```yaml
@@ -232,7 +232,10 @@ raptorq:
 ```
 </details>
 
-> You can use locally installed lumerad for API: `lumera.grpc_addr: "localhost:9090"`
+> **NOTE** For gRPC endpoint you can use:
+>  * locally installed lumerad: `lumera.grpc_addr: "localhost:9090"`
+>  * for testnet: https://grpc.testnet.lumera.io
+>  * for mainnet: https://grpc.lumera.io
 
 ---
 
@@ -264,7 +267,7 @@ lumerad tx supernode register-supernode \
   --keyring-backend <file|os|test>
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet</strong></summary>
 
 ```bash
@@ -303,8 +306,8 @@ Description=Lumera SuperNode
 After=network-online.target
 
 [Service]
-User=%i
-ExecStart=/usr/local/bin/supernode start --home /home/%i/.supernode
+User=$(whoami)
+ExecStart=/usr/local/bin/supernode start -d /home/$(whoami)/.supernode
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
@@ -321,10 +324,10 @@ EOF
 sudo systemctl daemon-reload
 
 # Enable and start the service for the current user
-sudo systemctl enable --now supernode@$(whoami)
+sudo systemctl enable --now supernode.service
 
 # Monitor service logs
-journalctl -u supernode@$(whoami) -f
+journalctl -u supernode.service -f
 ```
 
 ---
@@ -340,16 +343,18 @@ Check your SuperNode registration and operational status.
 <summary><strong>Mainnet</strong></summary>
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-lumerad q supernode get-super-node $VALOPER --node https://rpc.lumera.io:443
+VALIDATOR_KEY_NAME=<your_validator_key_name>
+VALOPER=$(lumerad keys show $VALIDATOR_KEY_NAME --bech val --keyring-backend <file|os|test>)
+lumerad q supernode get-super-node $VALOPER --node https://rpc.lumera.io
 ```
 </details>
-<details>
+<details open>
 <summary><strong>Testnet</strong></summary>
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-lumerad q supernode get-super-node $VALOPER --node https://rpc.testnet.lumera.io:443
+VALIDATOR_KEY_NAME=<your_validator_key_name>
+VALOPER=$(lumerad keys show $VALIDATOR_KEY_NAME --bech val -a --keyring-backend <file|os|test>)
+lumerad q supernode get-super-node $VALOPER --node https://rpc.testnet.lumera.io
 ```
 </details>
 
