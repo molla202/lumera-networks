@@ -46,7 +46,7 @@ Before proceeding, ensure:
   <summary><strong>Mainnet Requirement</strong></summary>
   - **≥ 25,000 LUME** self-staked
   </details>
-  <details>
+  <details open>
   <summary><strong>Testnet Requirement</strong></summary>
   - **≥ 10,000 LUME** self-staked
   </details>
