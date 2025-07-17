@@ -42,14 +42,8 @@ Your SuperNode host must have the following ports open for inbound traffic:
 Before proceeding, ensure:
 - ✅ Your validator is running and operational.
 - ✅ Your validator has the required self-stake:
-  <details>
-  <summary><strong>Mainnet Requirement</strong></summary>
-  - **≥ 25,000 LUME** self-staked
-  </details>
-  <details open>
-  <summary><strong>Testnet Requirement</strong></summary>
-  - **≥ 10,000 LUME** self-staked
-  </details>
+  - Mainnet - **≥ 25,000 LUME** self-staked
+  - Testnet - **≥ 10,000 LUME** self-staked
 - ✅ You have access to your validator signing keys.
 - ✅ Your validator is either in the active set OR meets the self-stake requirement.
 
@@ -201,7 +195,7 @@ p2p:
   data_dir: data/p2p
   external_ip: ""
 lumera:
-  grpc_addr: "https://grpc.lumera.io"
+  grpc_addr: "localhost:9090"
   chain_id: "lumera-mainnet-1"
 raptorq:
   files_dir: raptorq_files
@@ -225,17 +219,18 @@ p2p:
   data_dir: data/p2p
   external_ip: ""
 lumera:
-  grpc_addr: "https://grpc.testnet.lumera.io"
+  grpc_addr: "localhost:9090"
   chain_id: "lumera-testnet-2"
 raptorq:
   files_dir: raptorq_files
 ```
 </details>
 
-> **NOTE** For gRPC endpoint you can use:
->  * locally installed lumerad: `lumera.grpc_addr: "localhost:9090"`
->  * for testnet: https://grpc.testnet.lumera.io
->  * for mainnet: https://grpc.lumera.io
+> **NOTE**:<br/>
+> For gRPC endpoint (`lumera.grpc_addr) you can use either:
+>  * `localhost:9090` - for locally installed `lumerad` (*default*)
+>  * `https://grpc.lumera.io` - for **mainnet**
+>  * `https://grpc.testnet.lumera.io` - for **testnet**
 
 ---
 
