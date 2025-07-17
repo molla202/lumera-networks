@@ -129,6 +129,15 @@ sudo chmod +x /usr/local/bin/supernode
 supernode version
 ```
 
+> **NOTE:** If you get error
+> ```bash
+> supernode: error while loading shared libraries: libwebp.so.7: cannot open shared object file: No such file or directory
+> ```
+> Run this command:
+> ```bash
+> sudo apt install libwebp-dev -y
+> ```
+
 ---
 
 ## Step 4: Initialize SuperNode Configuration
