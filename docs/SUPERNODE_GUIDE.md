@@ -1,293 +1,182 @@
 # Lumera SuperNode Operator Guide
 
-## Introduction
-
-This guide provides comprehensive instructions for validator operators who wish to deploy and manage a SuperNode on the Lumera Protocol. SuperNodes provide additional services (storage, AI processing, and other network services) alongside standard block validation and earn **Proof-of-Service (PoSe)** rewards in parallel with PoS staking rewards.
-
-> **Important:** Each validator may attach **exactly one** SuperNode.
+> Scope update (July 2025) – This revision aligns the guide with the latest `supernode init` command defaults and the new dual‑source stake validation flow. Follow it exactly to avoid registration failures.
+> 
 
 ---
 
-## Pre-flight Checklist
+## 1. Quick Path (High‑Level)
 
-Gather the following information before starting:
-
-- [ ] SuperNode host public IP address
-- [ ] Access to validator host (for registration commands)
-
----
-
-## Step 1: Prerequisites
-
-### System Requirements
-
-Ensure your SuperNode host meets the following minimum requirements:
-
-| Component | Minimum | Recommended | Notes |
-|-----------|---------|-------------|-------|
-| **CPU** | 8 × vCPU | 16 × vCPU | x86_64 architecture |
-| **RAM** | 16 GB | 64 GB | For service processing |
-| **Storage** | 1 TB NVMe | 4 TB NVMe | High-speed storage required |
-| **Network** | 1 Gbps | 5 Gbps | Stable internet connection |
-| **OS** | Ubuntu 22.04 LTS+ | Ubuntu 22.04 LTS+ | Install `build-essential` |
-
-### Network Requirements
-
-Your SuperNode host must have the following ports open for inbound traffic:
-- **Port 4444** (gRPC/API)
-- **Port 4445** (P2P) - **Do not change this port**
-
-### Validator Prerequisites
-
-Before proceeding, ensure:
-- ✅ Your validator is running and operational.
-- ✅ Your validator has the required self-stake:
-  <details>
-  <summary><strong>Mainnet Requirement</strong></summary>
-  - **≥ 25,000 LUME** self-staked
-  </details>
-  <details>
-  <summary><strong>Testnet Requirement</strong></summary>
-  - **≥ 10,000 LUME** self-staked
-  </details>
-- ✅ You have access to your validator signing keys.
-- ✅ Your validator is either in the active set OR meets the self-stake requirement.
-
-> **Note:** The SuperNode and validator can (and should) run on separate servers for enhanced security and performance.
+1. ✅ **Validator exists** (already installed, set up, and in `BOND_STATUS_BONDED`). If you don’t have one yet, finish the validator guide first.
+2. ⚖️ **Meet the minimum stake (choose one path)**
+    - **Path A — Self‑Stake**: acquire and self‑delegate the required LUME.
+    - **Path B — Foundation‑Supported**:
+        
+        1. Generate a **brand‑new address** on the validator host (no prior balance, no existing account).
+        
+        2. Ask the Foundation to **fund** that address ***or*** convert the transfer into a **vesting account** (`create‑delayed‑account` / `create‑permanently‑locked‑account`).
+        
+        3. Delegate *from that new address* to your validator.
+        
+3. 📦 Install the SuperNode binary on a separate host.
+4. 🛠️ **Init the SuperNode config**
+    - Path A: run `supernode init` and create a brand‑new key.
+    - Path B: run `supernode init --recover` with the mnemonic of the address used in step 2‑B.
+5. 📝 **Register the SuperNode** *from the **validator** host* – transaction **must** be signed by the **validator operator account**.
 
 ---
 
-## Step 2: Validator Stake Verification
+## 2. System Requirements
 
-**Host:** Validator Host
+| Component | Minimum | Recommended |
+| --- | --- | --- |
+| **CPU** | 8 vCPU | 16 vCPU |
+| **RAM** | 16 GB | 64 GB |
+| **Storage** | 1 TB NVMe | 4 TB NVMe |
+| **Network** | 1 Gbps | 5 Gbps |
+| **OS** | Ubuntu 22.04 LTS+ | Same |
 
-Verify that your validator meets the minimum staking requirements.
+Open inbound **4444/tcp** (gRPC API) and **4445/tcp** (P2P).
 
-### Check Current Validator Stake
+---
+
+## 3. Stake Preparation
+
+### 3.1 Check Current Self‑Stake
 
 ```bash
-# Replace <your_validator_key_name> with your actual validator key name
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-echo "Validator Address: $VALOPER"
-
-# Check current validator status and stake
-lumerad q staking validator $VALOPER
+VALOPER=$(lumerad keys show <val_key> --bech val -a)
+lumerad q staking validator $VALOPER
 ```
 
-**Verify Requirements:**
-- Look for the `tokens` field in the output and confirm `status: BOND_STATUS_BONDED`.
-- Ensure the stake meets the minimum:
-  Mainnet Stake ≥ `25000000000000` (25,000 LUME in ulume)
-  Testnet Stake ≥ `10000000000000` (10,000 LUME in ulume)
-  
-> **Note:** If commands fail, you may need to add the `--keyring-backend <backend>` flag matching your validator's keyring configuration (e.g., `file`, `os`, `test`).
+Confirm ≥ required tokens (`25 000 LUME` mainnet / `10 000 LUME` testnet).
 
-### Add Additional Stake (if required)
+### 3.2 Path A — Pure Self‑Stake
 
-If your validator needs more stake:
-<details>
-<summary><strong>Mainnet Example</strong></summary>
+Self‑delegate as needed:
 
 ```bash
-# Delegate additional stake. Example: Adding 5,000 LUME (5000000000000ulume)
-lumerad tx staking delegate $VALOPER 5000000000000ulume \
-  --from <your_validator_key_name> \
-  --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
+lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
 ```
-</details>
+
 <details>
 <summary><strong>Testnet Example</strong></summary>
 
 ```bash
-# Delegate additional stake. Example: Adding 1,000 LUME (1000000000000ulume)
-lumerad tx staking delegate $VALOPER 1000000000000ulume \
-  --from <your_validator_key_name> \
-  --chain-id lumera-testnet-2 \
-  --gas auto --fees 1000ulume
+lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --fees 5000ulume --chain-id lumera-testnet-2
 ```
 </details>
 
----
+### 3.3 Path B — Foundation‑Supported Delegation
 
-## Step 3: Install SuperNode Binary
-
-**Host:** SuperNode Host
-
-Download and install the latest SuperNode binary.
+1. **Create an empty account** on the validator host:
 
 ```bash
-# Download the SuperNode binary
-sudo curl -L \
-  -o /usr/local/bin/supernode \
+lumerad keys add sn_delegate_key --keyring-backend file
+```
+
+2. **Foundation transfer** (example – delayed vesting):
+
+```bash
+# broadcasted by the Foundation, shown here for completeness
+lumerad tx vesting create-delayed-account <new_addr> 25000000000000ulume --from foundation --chain-id lumera-mainnet-1 --fees 5000ulume
+```
+
+3. **Delegate from the new address**:
+
+```bash
+lumerad tx staking delegate $VALOPER 25000000000000ulume --from sn_delegate_key --gas auto --fees 5000ulume --chain-id **lumera-testnet-2**
+```
+
+<details>
+<summary><strong>Testnet Example</strong></summary>
+
+```bash
+lumerad tx staking delegate $VALOPER 10000000000000ulume --from sn_delegate_key --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+```
+</details>    
+
+> Dual‑Source check: the network will now sum self‑delegation + delegation from <new_addr> when validating SuperNode eligibility.
+> 
+
+---
+
+## 4. Install SuperNode Binary
+
+```bash
+sudo curl -L -o /usr/local/bin/supernode \
   https://github.com/LumeraProtocol/supernode/releases/latest/download/supernode-linux-amd64
-
-# Make it executable
-sudo chmod +x /usr/local/bin/supernode
-
-# Verify installation
-supernode version
+sudo chmod +x /usr/local/bin/supernode
+supernode version
 ```
 
 ---
 
-## Step 4: Initialize SuperNode Configuration
+## 5. Initialize the SuperNode Configuration
 
-**Host:** SuperNode Host
+### Defaults (from `init.go`)
 
-#### Option A: Initialize and Create a New Key
-<details>
-<summary><strong>Mainnet</strong></summary>
+| Option | Default |
+| --- | --- |
+| `keyring-backend` | `os` |
+| `supernode-addr` | `0.0.0.0` |
+| `supernode-port` | `4444` |
+| `lumera-grpc` | `localhost:9090` |
+| `chain-id` | `lumera-mainnet-1` |
 
-```bash
-supernode init <your_supernode_key_name> --chain-id lumera-mainnet-1
-```
-</details>
-<details>
-<summary><strong>Testnet</strong></summary>
+> If you don’t want to use local Lumera node for API access, add  `--lumera-grpc https://lumera.grpc_addr` (mainnet) or `--lumera-grpc https://lumera.testnet.grpc_addr` (testnet) to the following commnds
+> 
 
-```bash
-supernode init <your_supernode_key_name> --chain-id lumera-testnet-2
-```
-</details>
-
-> **Security:** Store your mnemonic phrase and keyring password securely. They are required for key recovery.
-
-#### Option B: Recover an Existing Key
-<details>
-<summary><strong>Mainnet</strong></summary>
+### 5.1 Path A — Create a New Key
 
 ```bash
-supernode init <your_supernode_key_name> --recover --mnemonic "<your_24_word_mnemonic_phrase>" --chain-id lumera-mainnet-1
+supernode init --key-name mySNKey --chain-id lumera-mainnet-1
 ```
-</details>
+
 <details>
-<summary><strong>Testnet</strong></summary>
+<summary><strong>Testnet Example</strong></summary>
 
 ```bash
-supernode init <your_supernode_key_name> --recover --mnemonic "<your_24_word_mnemonic_phrase>" --chain-id lumera-testnet-2
+supernode init --key-name mySNKey --chain-id **lumera-testnet-2**
 ```
-</details>
+</details>    
 
-> **Important:** After initializing, ensure the new SuperNode account address has funds for gas fees.
+Follow the interactive prompts (**or** pass `-y` plus flags for non‑interactive setup).
 
-### Edit Configuration File
+### 5.2 Path B — Recover the Foundation Delegation Address
 
-The `supernode init` command creates a configuration file at `~/.supernode/config.yml`. Verify its contents.
+```bash
+supernode init --key-name sn_delegate_key --recover --chain-id lumera-mainnet-1
+```
+
 <details>
-<summary><strong>Mainnet Configuration</strong></summary>
+<summary><strong>Testnet Example</strong></summary>
 
-```yaml
-supernode:
-  key_name: <your_supernode_key_name>
-  identity: "<your_supernode_lumera_address>"
-  ip_address: 0.0.0.0
-  port: 4444
-keyring:
-  backend: file
-  dir: keys
-p2p:
-  listen_address: 0.0.0.0
-  port: 4445
-  data_dir: data/p2p
-  external_ip: ""
-lumera:
-  grpc_addr: "https://grpc.lumera.io"
-  chain_id: "lumera-mainnet-1"
-raptorq:
-  files_dir: raptorq_files
+```bash
+supernode init --key-name sn_delegate_key --recover --chain-id lumera-testnet-2
 ```
-</details>
-<details>
-<summary><strong>Testnet Configuration</strong></summary>
+</details>    
 
-```yaml
-supernode:
-  key_name: <your_supernode_key_name>
-  identity: "<your_supernode_lumera_address>"
-  ip_address: 0.0.0.0
-  port: 4444
-keyring:
-  backend: file
-  dir: keys
-p2p:
-  listen_address: 0.0.0.0
-  port: 4445
-  data_dir: data/p2p
-  external_ip: ""
-lumera:
-  grpc_addr: "https://grpc.testnet.lumera.io"
-  chain_id: "lumera-testnet-2"
-raptorq:
-  files_dir: raptorq_files
-```
-</details>
+Follow the interactive prompts (**or** pass `-y` plus flags for non‑interactive setup).
 
-> You can use locally installed lumerad for API: `lumera.grpc_addr: "localhost:9090"`
+> Important – this key must match the address that delegated in §3.3, otherwise eligibility will fail.
+> 
+
+The command creates `~/.supernode/config.yml`. Review and, if needed, edit it manually.
 
 ---
 
-## Step 5: SuperNode Registration
-
-**Host:** Validator Host
-
-Register your SuperNode on-chain. This must be done from your **validator host** after your SuperNode service is running.
-
-### Execute Registration Transaction
-<details>
-<summary><strong>Mainnet</strong></summary>
+## 6. Run SuperNode as a Service
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-SUPERNODE_ENDPOINT="<your_supernode_public_ip>:4444"
-SUPERNODE_ACCOUNT="<your_supernode_lumera_address>"
-
-lumerad tx supernode register-supernode \
-  $VALOPER \
-  $SUPERNODE_ENDPOINT \
-  $SUPERNODE_ACCOUNT \
-  --from <your_validator_key_name> \
-  --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
-```
-</details>
-<details>
-<summary><strong>Testnet</strong></summary>
-
-```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-SUPERNODE_ENDPOINT="<your_supernode_public_ip>:4444"
-SUPERNODE_ACCOUNT="<your_supernode_lumera_address>"
-
-lumerad tx supernode register-supernode \
-  $VALOPER \
-  $SUPERNODE_ENDPOINT \
-  $SUPERNODE_ACCOUNT \
-  --from <your_validator_key_name> \
-  --chain-id lumera-testnet-2 \
-  --gas auto --fees 1000ulume
-```
-</details>
-
----
-
-## Step 6: SuperNode Service Deployment
-
-**Host:** SuperNode Host
-
-### Create Systemd Service
-
-Create a `systemd` service file for automatic SuperNode management.
-
-```bash
-sudo tee /etc/systemd/system/supernode.service <<EOF
+sudo tee /etc/systemd/system/supernode.service <<EOF
 [Unit]
-Description=Lumera SuperNode
+Description=Lumera SuperNode
 After=network-online.target
 
 [Service]
 User=%i
-ExecStart=/usr/local/bin/supernode start --home /home/%i/.supernode
+ExecStart=/usr/local/bin/supernode start --home /home/%i/.supernode
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
@@ -295,120 +184,73 @@ LimitNOFILE=65536
 [Install]
 WantedBy=multi-user.target
 EOF
-```
 
-### Start SuperNode Service
-
-```bash
-# Reload systemd configuration
-sudo systemctl daemon-reload
-
-# Enable and start the service for the current user
-sudo systemctl enable --now supernode@$(whoami)
-
-# Monitor service logs
-journalctl -u supernode@$(whoami) -f
+sudo systemctl daemon-reload
+sudo systemctl enable --now supernode@$(whoami)
+journalctl -u supernode@$(whoami) -f
 ```
 
 ---
 
-## Step 7: Verification and Monitoring
+## 7. Register the SuperNode (on Validator Host)
 
-### Verify SuperNode Status
+```bash
+VALOPER=$(lumerad keys show <val_key> --bech val -a)
+SN_ENDPOINT="<sn_ip>:4444"
+SN_ACCOUNT="$(lumerad keys show <sn_key_or_sn_delegate_key> -a)"
 
-**Host:** Validator Host
+lumerad tx supernode register-supernode \
+  $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
+  --from <val_key> --chain-id lumera-mainnet-1 \
+  --gas auto --fees 5000ulume
+```
 
-Check your SuperNode registration and operational status.
 <details>
-<summary><strong>Mainnet</strong></summary>
+<summary><strong>Testnet Example</strong></summary>
 
 ```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-lumerad q supernode get-super-node $VALOPER --node https://rpc.lumera.io:443
+VALOPER=$(lumerad keys show <val_key> --bech val -a)
+SN_ENDPOINT="<sn_ip>:4444"
+SN_ACCOUNT="$(lumerad keys show <sn_key_or_sn_delegate_key> -a)"
+
+lumerad tx supernode register-supernode \
+  $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
+  --from <val_key> --chain-id lumera-testnet-2 \
+  --gas auto --fees 5000ulume
 ```
-</details>
-<details>
-<summary><strong>Testnet</strong></summary>
+</details>    
 
-```bash
-VALOPER=$(lumerad keys show <your_validator_key_name> --bech val -a)
-lumerad q supernode get-super-node $VALOPER --node https://rpc.testnet.lumera.io:443
-```
-</details>
-
-You should see the `state` field as `ACTIVE`.
-
-### Monitor SuperNode Operations
-
-**Host:** SuperNode Host
-
-```bash
-# Monitor real-time logs
-journalctl -u supernode@$(whoami) -f
-
-# Check service status
-sudo systemctl status supernode@$(whoami)
-```
+- The **`-from`** signer *must* be the **validator operator account**.
+- Eligibility is checked immediately using **self‑delegation + SN‑account delegation**.
 
 ---
 
-## Step 8: Security Best Practices
+## 8. Verification
 
-### Infrastructure Security
-- **🏠 Separate Hosting**: Deploy SuperNode on a different server than the validator.
-- **🔥 Network Security**: Implement firewall rules to allow only necessary ports (4444, 4445).
-- **🔐 Key Management**: Use secure keyring backends (`os` or HSM) for production.
-
-### Backup Requirements
-**Critical Files to Backup:**
-- The entire `~/.supernode/` directory (contains `config.yml`, keyring files, and operational data).
-
-> **Tip:** Regularly back up the `~/.supernode/` directory to prevent data loss.
-
----
-
-## Troubleshooting
-
-| Issue | Symptom | Solution | Host |
-|-------|---------|----------|------|
-| **Registration Failure** | `insufficient funds` error | Ensure validator account has LUME for gas fees. | Validator Host |
-| **Connection Issues** | SuperNode not reaching `ACTIVE` state | Verify ports 4444 and 4445 are open and accessible. | SuperNode Host |
-| **Key Errors** | Authentication failures | Add `--keyring-backend <type>` to commands. | Validator Host |
-| **Sync Issues** | SuperNode stuck at startup | Check `grpc_addr` connectivity in `config.yml`. | SuperNode Host |
-
----
-
-## SuperNode Setup Workflow
-
-The following diagram illustrates the high-level steps required to set up and register a SuperNode.
-
-```mermaid
-sequenceDiagram
-    participant Operator
-    participant Validator Host
-    participant SuperNode Host
-
-    Operator->>Validator Host: Step 2: Verify Stake
-    Note right of Operator: Check if validator has required LUME stake.
-    Validator Host-->>Operator: Stake Information
-
-    Operator->>SuperNode Host: Step 3: Install Binary
-    Note right of Operator: Download and install the `supernode` executable.
-    SuperNode Host-->>Operator: Installation Confirmed
-
-    Operator->>SuperNode Host: Step 4: Initialize & Configure
-    Note right of Operator: Generate SuperNode key and edit `config.yml`.
-    SuperNode Host-->>Operator: Returns SuperNode Key/Address
-
-    Operator->>SuperNode Host: Step 6: Deploy Service
-    Note right of Operator: Create and start the `supernode` systemd service.
-    SuperNode Host-->>Operator: Service is Running
-
-    Operator->>Validator Host: Step 5: Register SuperNode
-    Note right of Operator: Use Validator key to register the SuperNode's IP and Address on-chain.
-    Validator Host-->>Operator: Registration Transaction Submitted
-
-    Operator->>Validator Host: Step 7: Verify Activation
-    Note right of Operator: Query the chain to confirm the SuperNode is `ACTIVE`.
-    Validator Host-->>Operator: Status: ACTIVE
+```bash
+lumerad q supernode get-super-node $VALOPER --node https://rpc.lumera.io:443
 ```
+
+Status should be `ACTIVE`. If you see `INSUFFICIENT_STAKE`, re‑check §3.
+
+---
+
+## 9. Monitoring & Troubleshooting
+
+| Symptom | Likely Cause | Fix |
+| --- | --- | --- |
+| `ELIGIBILITY_FAILED` on registration | Combined stake < minimum | Verify delegations (§3) |
+| SuperNode stuck `DISABLED` | Validator fell out of active set **and** stake below threshold | Add stake or re‑enter active set |
+| gRPC errors | Wrong `lumera.grpc_addr` | Point to local node or official API |
+
+---
+
+## 10. Security Best Practices
+
+- **Separate Hosts** – keep validator keys and SuperNode keys on different machines.
+- **OS Keyring** – default `os` backend leverages system credential storage; use it in production.
+- **Backups** – back up `~/.supernode` and validator keyring separately.
+
+---
+
+© 2025 Lumera Protocol – Guide version 1.1
