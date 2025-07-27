@@ -124,7 +124,11 @@ supernode version
 | `lumera-grpc` | `localhost:9090` |
 | `chain-id` | `lumera-mainnet-1` |
 
-> If you don’t want to use local Lumera node for API access, add  `--lumera-grpc https://lumera.grpc_addr` (mainnet) or `--lumera-grpc https://lumera.testnet.grpc_addr` (testnet) to the following commnds
+> If you don’t want to use local Lumera node for API access, add 
+> `--lumera-grpc https://lumera.grpc_addr` (mainnet) 
+> or 
+> `--lumera-grpc https://lumera.testnet.grpc_addr` (testnet) 
+> to the `init` command bellow
 > 
 
 ### 5.1 Path A — Create a New Key
