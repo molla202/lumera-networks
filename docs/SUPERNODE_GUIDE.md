@@ -125,9 +125,9 @@ supernode version
 | `chain-id` | `lumera-mainnet-1` |
 
 > If you don’t want to use local Lumera node for API access, add 
-> `--lumera-grpc https://lumera.grpc_addr` (mainnet) 
+> `--lumera-grpc https://grpc.lumera.io` (mainnet) 
 > or 
-> `--lumera-grpc https://lumera.testnet.grpc_addr` (testnet) 
+> `--lumera-grpc https://grpc.testnet.lumera.io` (testnet) 
 > to the `init` command bellow
 > 
 
