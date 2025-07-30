@@ -16,37 +16,37 @@ A SuperNode is always linked to a **Validator**. You must have an existing, bond
 graph TD
     subgraph Legend
         direction LR
-        A1[Path 1: Self-Staking]:::path1Style
-        A2[Path 2: New SN Key]:::path2Style
-        A3[Path 3: Existing Wallet Key]:::path3Style
+        A1[Path 1 Self-Staking]:::path1Style
+        A2[Path 2 New SN Key]:::path2Style
+        A3[Path 3 Existing Wallet Key]:::path3Style
     end
 
-    subgraph "Path 1: Self-Staking"
+    subgraph "Path 1 - Self-Staking"
         direction TB
-        P1_Start(Start) --> P1_Step1{1. Acquire & Delegate LUME};
+        P1_Start(Start) --> P1_Step1{1. Acquire and Delegate};
         P1_Step1 --> P1_Step2{2. Install SuperNode};
-        P1_Step2 --> P1_Step3{3. Init SN with NEW Key};
+        P1_Step2 --> P1_Step3{3. Init SN with New Key};
         P1_Step3 --> P1_Step4{4. Register SuperNode};
         P1_Step4 --> P1_End(Done);
     end
 
-    subgraph "Path 2: Foundation Delegation (New SN Key)"
+    subgraph "Path 2 - Foundation Delegation New SN Key"
         direction TB
         P2_Start(Start) --> P2_Step1{1. Install SuperNode};
-        P2_Step1 --> P2_Step2{2. Init SN with NEW Key};
+        P2_Step1 --> P2_Step2{2. Init SN with New Key};
         P2_Step2 --> P2_Step3{3. Give Address to Foundation};
-        P2_Step3 --> P2_Step4{4. Foundation Creates Vesting Account};
+        P2_Step3 --> P2_Step4{4. Foundation Creates Vesting};
         P2_Step4 --> P2_Step5{5. Register SuperNode};
         P2_Step5 --> P2_End(Done);
     end
 
-    subgraph "Path 3: Foundation Delegation (Existing Wallet Key)"
+    subgraph "Path 3 - Foundation Delegation Existing Wallet Key"
         direction TB
         P3_Start(Start) --> P3_Step1{1. Create Wallet Key};
         P3_Step1 --> P3_Step2{2. Give Address to Foundation};
-        P3_Step2 --> P3_Step3{3. Foundation Creates Vesting Account};
+        P3_Step2 --> P3_Step3{3. Foundation Creates Vesting};
         P3_Step3 --> P3_Step4{4. Install SuperNode};
-        P3_Step4 --> P3_Step5{5. Init SN with --recover};
+        P3_Step4 --> P3_Step5{5. Init SN with Recover};
         P3_Step5 --> P3_Step6{6. Register SuperNode};
         P3_Step6 --> P3_End(Done);
     end
@@ -59,6 +59,7 @@ graph TD
     class P2_Start,P2_Step1,P2_Step2,P2_Step3,P2_Step4,P2_Step5,P2_End path2Style;
     class P3_Start,P3_Step1,P3_Step2,P3_Step3,P3_Step4,P3_Step5,P3_Step6,P3_End path3Style;
 ```
+> **Note:** If the diagram above does not render correctly, you can copy the code into a [Mermaid Live Editor](https://mermaid.live) to view it.
 
 ---
 
@@ -210,16 +211,18 @@ lumerad tx supernode register-supernode \
 ## Common Operations
 
 ### Run SuperNode as a Service
-This `systemd` service file ensures your SuperNode runs reliably.
+This `systemd` service file ensures your SuperNode runs reliably. **First, replace `<YOUR_USER>` in the two places below with your actual Linux username.**
+
 ```bash
+# Replace <YOUR_USER> before running
 sudo tee /etc/systemd/system/supernode.service <<EOF
 [Unit]
 Description=Lumera SuperNode
 After=network-online.target
 
 [Service]
-User=%i
-ExecStart=/usr/local/bin/supernode start --home /home/%i/.supernode
+User=<YOUR_USER>
+ExecStart=/usr/local/bin/supernode start --home /home/<YOUR_USER>/.supernode
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
@@ -227,10 +230,13 @@ LimitNOFILE=65536
 [Install]
 WantedBy=multi-user.target
 EOF
+```
 
+After creating the file, run the following commands, again replacing `<YOUR_USER>` with your username.
+```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now supernode@$(whoami)
-journalctl -u supernode@$(whoami) -f
+sudo systemctl enable --now supernode@<YOUR_USER>
+journalctl -u supernode@<YOUR_USER> -f
 ```
 
 ### Verify Registration
