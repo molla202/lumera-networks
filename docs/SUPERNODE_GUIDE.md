@@ -12,7 +12,7 @@
     - **Path A — Self‑Stake**: acquire and self‑delegate the required LUME.
     - **Path B — Foundation‑Supported**:
         
-        1. Generate a **brand‑new address** on the validator host (no prior balance, no existing account).
+        1. Generate a **brand‑new address* (no prior balance, no existing account).
         
         2. Ask the Foundation to **fund** that address ***or*** convert the transfer into a **vesting account** (`create‑delayed‑account` / `create‑permanently‑locked‑account`).
         
