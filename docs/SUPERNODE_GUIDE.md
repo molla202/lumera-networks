@@ -106,7 +106,7 @@ This path is for validators who meet the minimum stake requirement through their
 VALOPER=$(lumerad keys show <val_key> --bech val -a)
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
 ```
 
 ### Step 2. Initialize SuperNode with a New Key
@@ -129,7 +129,7 @@ SN_ACCOUNT="$(supernode keys show mySNKey -a --home /path/to/.supernode)" # Get 
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
   --from <val_key> --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
+  --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
 ---
@@ -164,7 +164,7 @@ VALOPER=$(lumerad keys show <val_key> --bech val -a)
 SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
 ```
 
 ### Step 4. Register the SuperNode
@@ -179,7 +179,7 @@ SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
   --from <val_key> --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
+  --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
 ---
@@ -208,7 +208,7 @@ VALOPER=$(lumerad keys show <val_key> --bech val -a)
 SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
 ```
 
 ### Step 4. Initialize SuperNode with `--recover`
@@ -231,7 +231,7 @@ SN_ACCOUNT="<the_wallet_address_from_step_1>"
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
   --from <val_key> --chain-id lumera-mainnet-1 \
-  --gas auto --fees 5000ulume
+  --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
 ---
