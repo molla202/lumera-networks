@@ -19,10 +19,11 @@ graph TD
         P3_Start(Start) --> P3_Step1[Create Wallet Key];
         P3_Step1 --> P3_Step2[Give Address to Foundation];
         P3_Step2 --> P3_Step3[Foundation Creates Vesting];
-        P3_Step3 --> P3_Step4[Install SuperNode];
-        P3_Step4 --> P3_Step5[Init SN with Recover];
-        P3_Step5 --> P3_Step6[Register SuperNode];
-        P3_Step6 --> P3_End(Done);
+        P2_Step3 --> P2_Step4[Delegate to your SuperNode];
+        P3_Step4 --> P3_Step4[Install SuperNode];
+        P3_Step5 --> P3_Step5[Init SN with Recover];
+        P3_Step6 --> P3_Step6[Register SuperNode];
+        P3_Step7 --> P3_End(Done);
     end
 
     subgraph "Path 2 - Foundation Delegation New SN Key"
@@ -31,8 +32,9 @@ graph TD
         P2_Step1 --> P2_Step2[Init SN with New Key];
         P2_Step2 --> P2_Step3[Give Address to Foundation];
         P2_Step3 --> P2_Step4[Foundation Creates Vesting];
-        P2_Step4 --> P2_Step5[Register SuperNode];
-        P2_Step5 --> P2_End(Done);
+        P2_Step4 --> P2_Step4[Delegate to your SuperNode];
+        P2_Step5 --> P2_Step5[Register SuperNode];
+        P2_Step6 --> P2_End(Done);
     end
 
     subgraph "Path 1 - Self-Staking"
@@ -152,7 +154,20 @@ Give the new SuperNode address (e.g., `lumera1...`) to the Lumera Foundation. Th
 
 **Wait for confirmation** from the Foundation that the vesting account has been created and funded. The address must have an on-chain account before you can proceed.
 
-### Step 3. Register the SuperNode
+### Step 3. Delegate
+
+Delegate the tokens to your own validator from that same address.
+
+```bash
+# Check your validator's operator address
+VALOPER=$(lumerad keys show <val_key> --bech val -a)
+SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
+
+# Delegate to meet the minimum stake
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+```
+
+### Step 4. Register the SuperNode
 Once the vesting account is live, go to your **validator host** and run the registration command. This command associates your validator with the new, Foundation-funded SuperNode address.
 
 ```bash
@@ -183,7 +198,20 @@ Give the new, unused wallet address to the Lumera Foundation. The Foundation wil
 
 **Wait for confirmation** that the vesting account is live.
 
-### Step 3. Initialize SuperNode with `--recover`
+### Step 3. Delegate
+
+Delegate the tokens to your own validator from that same address.
+
+```bash
+# Check your validator's operator address
+VALOPER=$(lumerad keys show <val_key> --bech val -a)
+SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
+
+# Delegate to meet the minimum stake
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --fees 5000ulume --chain-id lumera-mainnet-1
+```
+
+### Step 4. Initialize SuperNode with `--recover`
 On the SuperNode host, run the `init` command with the `--recover` flag. This will prompt you to enter the mnemonic phrase from the wallet you created in Step 1.
 
 ```bash
@@ -191,7 +219,7 @@ supernode init --key-name myWalletSNKey --recover --chain-id lumera-mainnet-1
 ```
 This imports your wallet key into the SuperNode's keyring, ensuring the SuperNode and the on-chain vesting account are controlled by the same key.
 
-### Step 4. Register the SuperNode
+### Step 5. Register the SuperNode
 Return to your **validator host** and run the registration command, pointing to the address you imported.
 
 ```bash
