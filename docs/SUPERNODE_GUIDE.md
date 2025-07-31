@@ -19,10 +19,10 @@ graph TD
         P3_Start(Start) --> P3_Step1[Create Wallet Key];
         P3_Step1 --> P3_Step2[Give Address to Foundation];
         P3_Step2 --> P3_Step3[Foundation Creates Vesting];
-        P2_Step3 --> P2_Step4[Delegate to your SuperNode];
-        P3_Step4 --> P3_Step4[Install SuperNode];
-        P3_Step5 --> P3_Step5[Init SN with Recover];
-        P3_Step6 --> P3_Step6[Register SuperNode];
+        P3_Step3 --> P3_Step4[Delegate to your SuperNode];
+        P3_Step4 --> P3_Step5[Install SuperNode];
+        P3_Step5 --> P3_Step6[Init SN with Recover];
+        P3_Step6 --> P3_Step7[Register SuperNode];
         P3_Step7 --> P3_End(Done);
     end
 
@@ -32,8 +32,8 @@ graph TD
         P2_Step1 --> P2_Step2[Init SN with New Key];
         P2_Step2 --> P2_Step3[Give Address to Foundation];
         P2_Step3 --> P2_Step4[Foundation Creates Vesting];
-        P2_Step4 --> P2_Step4[Delegate to your SuperNode];
-        P2_Step5 --> P2_Step5[Register SuperNode];
+        P2_Step4 --> P2_Step5[Delegate to your SuperNode];
+        P2_Step5 --> P2_Step6[Register SuperNode];
         P2_Step6 --> P2_End(Done);
     end
 
@@ -58,8 +58,8 @@ graph TD
     classDef path3Style fill:#FADBD8,stroke:#E74C3C,stroke-width:2px;
 
     class P1_Start,P1_Step1,P1_Step2,P1_Step3,P1_Step4,P1_End path1Style;
-    class P2_Start,P2_Step1,P2_Step2,P2_Step3,P2_Step4,P2_Step5,P2_End path2Style;
-    class P3_Start,P3_Step1,P3_Step2,P3_Step3,P3_Step4,P3_Step5,P3_Step6,P3_End path3Style;
+    class P2_Start,P2_Step1,P2_Step2,P2_Step3,P2_Step4,P2_Step5,P2_Step6,P2_End path2Style;
+    class P3_Start,P3_Step1,P3_Step2,P3_Step3,P3_Step4,P3_Step5,P3_Step6,P3_Step7,P3_End path3Style;
 ```
 > **Note:** If the diagram above does not render correctly, you can copy the code into a [Mermaid Live Editor](https://mermaid.live) to view it.
 
