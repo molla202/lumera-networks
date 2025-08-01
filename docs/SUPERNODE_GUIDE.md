@@ -79,7 +79,7 @@ Your validator must already be installed, configured, and in `BOND_STATUS_BONDED
 | **Network** | 1 Gbps | 5 Gbps |
 | **OS** | Ubuntu 22.04 LTS+ | Same |
 
-Firewall: Open inbound **4444/tcp** (gRPC API) and **4445/tcp** (P2P) on the SuperNode host.
+Firewall: Open inbound **4444/tcp** (gRPC API), **8002/tcp** (REST Gateway), and **4445/tcp** (P2P) on the SuperNode host.
 
 ### 3. Install SuperNode Binary
 On your dedicated SuperNode host, install the binary:
@@ -89,6 +89,48 @@ sudo curl -L -o /usr/local/bin/supernode \
 sudo chmod +x /usr/local/bin/supernode
 supernode version
 ```
+### Keyring Passphrase Options (all paths)
+
+When you choose **`file`** or **`os`** as the `keyring.backend` in `~/.supernode/config.yml`, you **must** provide a passphrase.  
+SuperNode supports **three** mutually-exclusive ways to do so:
+
+1. **Plain-text in the config file**
+
+   ```yaml
+   keyring:
+     backend: os            # or "file"
+     passphrase_plain: "12341234"
+   ```
+
+2. **Path to a file containing the passphrase**
+
+   ```yaml
+   keyring:
+     backend: file
+     dir: keys
+     passphrase_file: /home/alexey/.supernode-password
+   ```
+
+3. **Environment variable**
+
+   ```yaml
+   keyring:
+     backend: file          # or "os"
+     dir: keys
+     passphrase_env: SUPERNODE_PWD
+   ```
+
+The `supernode init` command accepts equivalent flags:
+
+```bash
+--keyring-passphrase       12341234
+--keyring-passphrase-file  ~/.supernode-password
+--keyring-passphrase-env   SUPERNODE_PWD # You can use ANY name for variable here
+```
+> **Important:** The SuperNode CLI **will not** create the passphrase file or export the environment variable for you—you must create the file or `export SUPERNODE_PWD=...` yourself **after** running `supernode init` but **before** starting SuperNode (`supernode start`).
+
+If **none** of these are supplied, the CLI falls back to an **interactive prompt**, then writes the passphrase back to the config as `passphrase_plain:`.  
+Therefore, if you intend to use **file** or **env** storage you must pass the corresponding flag even when running interactively.
 
 ---
 
@@ -106,14 +148,14 @@ This path is for validators who meet the minimum stake requirement through their
 VALOPER=$(lumerad keys show <val_key> --bech val -a)
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from <val_key> --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-testnet-2
 ```
 
 ### Step 2. Initialize SuperNode with a New Key
 On the SuperNode host, run the `init` command. This will create a **brand-new key** for the SuperNode.
 
 ```bash
-supernode init --key-name mySNKey --chain-id lumera-mainnet-1
+supernode init --key-name mySNKey --chain-id lumera-testnet-2
 ```
 **Important:** Securely back up the mnemonic phrase displayed. This key is now your SuperNode's identity.
 
@@ -128,7 +170,7 @@ SN_ACCOUNT="$(supernode keys show mySNKey -a --home /path/to/.supernode)" # Get 
 
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
-  --from <val_key> --chain-id lumera-mainnet-1 \
+  --from <val_key> --chain-id lumera-testnet-2 \
   --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
@@ -142,7 +184,7 @@ This path is for operators who will receive a delegation from the Foundation to 
 On the SuperNode host, run the `init` command to create a new key and configuration.
 
 ```bash
-supernode init --key-name mySNKey --chain-id lumera-mainnet-1
+supernode init --key-name mySNKey --chain-id lumera-testnet-2
 ```
 **Action:**
 1.  Follow the prompts.
@@ -164,7 +206,7 @@ VALOPER=$(lumerad keys show <val_key> --bech val -a)
 SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-testnet-2
 ```
 
 ### Step 4. Register the SuperNode
@@ -178,7 +220,7 @@ SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
-  --from <val_key> --chain-id lumera-mainnet-1 \
+  --from <val_key> --chain-id lumera-testnet-2 \
   --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
@@ -208,14 +250,14 @@ VALOPER=$(lumerad keys show <val_key> --bech val -a)
 SN_ACCOUNT="<the_new_supernode_address_from_step_1>"
 
 # Delegate to meet the minimum stake
-lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-mainnet-1
+lumerad tx staking delegate $VALOPER <amount>ulume --from $SN_ACCOUNT --gas auto --gas-adjustment 1.3 --fees 7000ulume --chain-id lumera-testnet-2
 ```
 
 ### Step 4. Initialize SuperNode with `--recover`
 On the SuperNode host, run the `init` command with the `--recover` flag. This will prompt you to enter the mnemonic phrase from the wallet you created in Step 1.
 
 ```bash
-supernode init --key-name myWalletSNKey --recover --chain-id lumera-mainnet-1
+supernode init --key-name myWalletSNKey --recover --chain-id lumera-testnet-2
 ```
 This imports your wallet key into the SuperNode's keyring, ensuring the SuperNode and the on-chain vesting account are controlled by the same key.
 
@@ -230,7 +272,7 @@ SN_ACCOUNT="<the_wallet_address_from_step_1>"
 
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
-  --from <val_key> --chain-id lumera-mainnet-1 \
+  --from <val_key> --chain-id lumera-testnet-2 \
   --gas auto --gas-adjustment 1.3 --fees 5000ulume
 ```
 
