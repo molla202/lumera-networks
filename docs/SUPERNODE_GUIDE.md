@@ -108,7 +108,7 @@ SuperNode supports **three** mutually-exclusive ways to do so:
    keyring:
      backend: file
      dir: keys
-     passphrase_file: /home/alexey/.supernode-password
+     passphrase_file: /home/ubuntu/.supernode-password
    ```
 
 3. **Environment variable**
@@ -166,7 +166,7 @@ Go back to your **validator host**. The registration transaction must be signed 
 # On Validator Host
 VALOPER=$(lumerad keys show <val_key> --bech val -a)
 SN_ENDPOINT="<sn_ip>:4444"
-SN_ACCOUNT="$(supernode keys show mySNKey -a --home /path/to/.supernode)" # Get address from SN host
+SN_ACCOUNT="$(supernode keys show mySNKey -a --basedir /path/to/.supernode)" # Get address from SN host
 
 lumerad tx supernode register-supernode \
   $VALOPER $SN_ENDPOINT $SN_ACCOUNT \
@@ -292,7 +292,7 @@ After=network-online.target
 
 [Service]
 User=<YOUR_USER>
-ExecStart=/usr/local/bin/supernode start --home /home/<YOUR_USER>/.supernode
+ExecStart=/usr/local/bin/supernode start --basedir /home/<YOUR_USER>/.supernode
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
