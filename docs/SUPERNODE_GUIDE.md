@@ -318,6 +318,93 @@ The status should be `ACTIVE`. If you see `INSUFFICIENT_STAKE`, double-check you
 
 ---
 
+## Migrating to SuperNode Manager (sn-manager)
+
+SuperNode Manager (sn-manager) provides automatic updates and simplified management for your SuperNode. If you're already running a SuperNode, follow these steps to migrate to sn-manager with zero configuration changes.
+
+### Step 1. Stop Existing SuperNode Service
+First, stop and disable your current SuperNode service:
+```bash
+sudo systemctl stop supernode
+sudo systemctl disable supernode
+```
+
+### Step 2. Download and Install sn-manager
+Download sn-manager from the official release page:
+```bash
+# Download and extract
+curl -L https://github.com/LumeraProtocol/supernode/releases/latest/download/supernode-linux-amd64.tar.gz | tar -xz
+
+# Install sn-manager binary
+chmod +x sn-manager
+sudo mv sn-manager /usr/local/bin/
+
+# Verify installation
+sn-manager version
+```
+
+### Step 3. Create sn-manager Systemd Service
+Create a new systemd service for sn-manager. **Replace `<YOUR_USER>` with your Linux username:**
+```bash
+sudo tee /etc/systemd/system/sn-manager.service <<EOF
+[Unit]
+Description=Lumera SuperNode Manager
+After=network-online.target
+
+[Service]
+User=<YOUR_USER>
+ExecStart=/usr/local/bin/sn-manager start
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65536
+Environment="HOME=/home/<YOUR_USER>"
+WorkingDirectory=/home/<YOUR_USER>
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+### Step 4. Initialize sn-manager
+Run the initialization command. It will automatically detect your existing SuperNode configuration at `~/.supernode`:
+
+**Interactive mode (recommended):**
+```bash
+sn-manager init
+```
+
+**Non-interactive mode:**
+```bash
+sn-manager init -y --auto-upgrade --check-interval 3600
+```
+
+The initialization will:
+- Set up sn-manager configuration
+- Download the latest SuperNode binary automatically
+- Detect and use your existing SuperNode configuration
+- No need to re-enter keys or settings
+
+### Step 5. Start sn-manager Service
+Enable and start the sn-manager service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now sn-manager
+```
+
+### Step 6. Verify Migration
+Check that sn-manager is running correctly:
+```bash
+# View service status
+sudo systemctl status sn-manager
+
+# Follow logs
+journalctl -u sn-manager -f
+```
+
+Your SuperNode is now managed by sn-manager with automatic updates enabled. All your existing configuration, keys, and validator associations remain unchanged.
+
+---
+
 ## Tips and More
 
 ### Security Best Practices
