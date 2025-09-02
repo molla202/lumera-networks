@@ -7,23 +7,8 @@ This repository hosts Lumera Protocol Chain releases informat[i]()on and guides.
 **lumera-mainnet-1**
 
 #### Genesis
-Coming soon!
-
-#### Minimum gas price
-Coming soon!
-
-#### Seeds
-Coming soon!
-
-#### Explorer
-Coming soon!
-
-## Testnet
-#### Chain ID
-**lumera-testnet-1**
-
-#### Genesis
-[Testnet Genesis](testnet) 
+[Mainnet Genesis](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/mainnet/genesis.json) <br/>
+[Mainnet Claims](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/mainnet/claims.csv)
 
 #### Minimum gas price
 ```
@@ -32,19 +17,36 @@ minimum-gas-prices = "0.025ulume"
 
 #### Seeds
 ```
-seeds = "10a50e7a88561b22a8d1f6f0fb0b8e54412229ab@seeds.lumera.io:26656"
 ```
 
 #### Explorer
-https://portal.lumera.io/lumera-testnet-1
+Coming soon!
+
+## Testnet (2!)
+#### Chain ID
+**lumera-testnet-2**
+
+#### Genesis & Claims
+[Testnet-2 Genesis](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/genesis.json) <br/>
+[Testnet-2 Claims](https://raw.githubusercontent.com/LumeraProtocol/lumera-networks/refs/heads/master/testnet-2/claims.csv)
+
+#### Minimum gas price
+```
+minimum-gas-prices = "0.025ulume"
+```
+
+#### Seeds
+```
+seeds = "faff7c1350468c53121a669ac40e317a4a70c425@seeds.testnet.lumera.io:26656"
+```
+
+#### Explorer
+https://portal.testnet.lumera.io/lumera-testnet-2
 
 
 ## Guides
-* [Genesis Validator Onboarding Guide for Lumera Protocol](docs/GENESIS_VALIDATOR_ONBOARDING.md)
-* How to create a new node and join the network
-* How to sync node from a snapshot (quickest way to sync blocks).
-* How to upgrade Node to the latest version
 * [Lumera Protocol Validator Operations Manual](docs/VALIDATOR_GUIDE.md)
+* [Lumera SuperNode Operator Guide](docs/SUPERNODE_GUIDE.md)
 
 ## Requirements
 The following requirements are required to run the node natively.

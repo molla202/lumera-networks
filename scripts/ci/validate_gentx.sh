@@ -3,12 +3,12 @@
 set -euo pipefail
 
 # ---------- chain-specific constants ----------
-CHAIN_ID="lumera-mainnet-1"
+CHAIN_ID="lumera-testnet-2"
 DENOM="ulume"
 AMOUNT="1000000${DENOM}"        # 1 LUME
 BINARY="lumerad"
 HOME_DIR="$(pwd)/_ci_home"      # throw-away directory
-GENESIS_TEMPLATE="mainnet/genesis.json"
+GENESIS_TEMPLATE="testnet-2/genesis.json"
 # ---------------------------------------------
 
 echo "🔧 CI gentx validation started"
@@ -23,8 +23,8 @@ cp "${GENESIS_TEMPLATE}" "${HOME_DIR}/config/genesis.json"
 mkdir -p "${HOME_DIR}/config/gentx"
 
 # 3.  iterate over every gentx file in the repo
-echo "• Processing gentx files in mainnet/gentx/"
-for gentx in mainnet/gentx/*.json; do
+echo "• Processing gentx files in testnet-2/gentx/"
+for gentx in testnet-2/gentx/*.json; do
     echo "• processing ${gentx}"
 
     # 3a. extract signer pubkey (secp256k1, base64)
